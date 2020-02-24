@@ -9,9 +9,9 @@ import numpy as np
 from PIL import ImageDraw
 from PIL import ImageFont
 
-font = ImageFont.truetype(r'readonly/fanwood-webfont.ttf', 20) #change this directory
-final_image=Image.new('RGB', (400,1), (255,255,255))
-face_cascade = cv.CascadeClassifier('readonly/haarcascade_frontalface_default.xml') #Change this directory
+font = ImageFont.truetype(r'readonly/fanwood-webfont.ttf', 20) 
+final_image=Image.new('RGB', (400,1), (255,255,255)) #the final output image
+face_cascade = cv.CascadeClassifier('readonly/haarcascade_frontalface_default.xml')
 
 # Below is the internal nested data structure
 # {'filename1': [PIL.image, [[bouning boxes of faces]], 'string of entire image text'], filename2: [...],...}
@@ -34,8 +34,12 @@ def generate_output(filenames):
     return images_for_sheet
 
 def contactsheet(images):
+    '''Create a contact sheet and 'append' it to the (bottom of) current version of final_image
+    :param images: A list of PIL.Image objects, ready to be made into a contact sheet. Ideally thumbnail sized
+    :return None: Function works by modifying the final_image variable
+    '''
     x,y=0,0
-    global final_image
+    global final_image #to ensure the global variable gets reassigned, not a local variable created in the function
     contact_sheet=Image.new('RGB', (400,160))
     for img in images:
         # Lets paste the current image into the contact sheet
@@ -47,21 +51,25 @@ def contactsheet(images):
             y=y+80
         else:
             x=x+80
-    new_im=Image.new('RGB', (400, final_image.height+contact_sheet.height))
-    new_im.paste(final_image, (0,0))
-    new_im.paste(contact_sheet, (0,final_image.height))
-    final_image=new_im
+    new_im=Image.new('RGB', (400, final_image.height+contact_sheet.height)) 
+    new_im.paste(final_image, (0,0)) #paste the current version of final_image
+    new_im.paste(contact_sheet, (0,final_image.height)) #paste the contact sheet just created
+    final_image=new_im #reassigning the global variable final_image
 
     
 def add_text(string):
-    global final_image
+    '''Adds a string to the bottom of current version of final_image
+    :param string: The string to be added into the PIL.Image
+    :return None: Modifies the global variable final_image
+    '''
+    global final_image #to ensure the global variable gets reassigned, not a local variable created in the function
     new_image=Image.new('RGB', (400, 40), (255,255,255))
     drawing=ImageDraw.Draw(new_image)
     drawing.text((1, 5), string, font=font, align='left', fill='black')
     new_im=Image.new('RGB', (400, final_image.height+40))
-    new_im.paste(final_image, (0,0))
-    new_im.paste(new_image, (0,final_image.height))
-    final_image=new_im
+    new_im.paste(final_image, (0,0)) #paste current version of final_image
+    new_im.paste(new_image, (0,final_image.height)) #paste the text image
+    final_image=new_im #reassigning the global variable final_image
     
 def convert_to_boundary(rec):
     '''Takes cv2 return bounding boxes of faces (top, left, w, h) and converts to 
@@ -80,7 +88,7 @@ def get_faces(pil_img):
     #opencv only takes BGR formatted objects, so using the builtin cv.COLOR_RBG2BGR to convert to BGR then to gray
     img = cv.cvtColor(np.array(pil_img), cv.COLOR_RGB2BGR)
     gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-    return face_cascade.detectMultiScale(img, 1.3)
+    return face_cascade.detectMultiScale(img, 1.3) #1.3 worked out well enough, but has some false positives and false negetives
 
 def draw_faces(pil_img, faces):
     '''Takes in a PIL image to draw rectangles on with the rectangle data given from get_faces() as a 4-list
@@ -125,7 +133,6 @@ def create_database(directory):
     return database 
 
 user_input=input('Enter a word to search: ')
-
 database=create_database('readonly/images.zip') #change this directory
 filenames=get_filenames(user_input)
 thumbnails=generate_output(filenames)
@@ -144,4 +151,5 @@ else:
 display(final_image)
 
 '''Note: final_image is a global variable which is modified using side-effects by functions. If you want
-to test parts of this code in other cells, re-initialize final_image to whats given in the code
+to test parts of this code in other cells, uncomment what is in the next cell and proceed to write test code
+''' 

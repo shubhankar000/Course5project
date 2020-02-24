@@ -9,9 +9,9 @@ import numpy as np
 from PIL import ImageDraw
 from PIL import ImageFont
 
-font = ImageFont.truetype(r'/Library/Fonts/Georgia.ttf', 20) #change this directory
+font = ImageFont.truetype(r'readonly/fanwood-webfont.ttf', 20) #change this directory
 final_image=Image.new('RGB', (400,1), (255,255,255))
-face_cascade = cv.CascadeClassifier('/Users/shubhankar/Desktop/opencv-master/data/haarcascades/haarcascade_frontalface_default.xml') #Change this directory
+face_cascade = cv.CascadeClassifier('readonly/haarcascade_frontalface_default.xml') #Change this directory
 
 # Below is the internal nested data structure
 # {'filename1': [PIL.image, [[bouning boxes of faces]], 'string of entire image text'], filename2: [...],...}
@@ -126,7 +126,7 @@ def create_database(directory):
 
 user_input='Mark'#input('Enter a word to search: ')
 
-database=create_database('/Users/shubhankar/Desktop/small_img.zip') #change this directory
+database=create_database('readonly/small_img.zip') #change this directory
 filenames=get_filenames(user_input)
 thumbnails=generate_output(filenames)
 

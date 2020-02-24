@@ -124,9 +124,9 @@ def create_database(directory):
         database[images.namelist()[i]] = [pil_img, get_faces(pil_img).tolist(), pytesseract.image_to_string(pil_img.convert('L'))]
     return database 
 
-user_input='Mark'#input('Enter a word to search: ')
+user_input=input('Enter a word to search: ')
 
-database=create_database('readonly/small_img.zip') #change this directory
+database=create_database('readonly/images.zip') #change this directory
 filenames=get_filenames(user_input)
 thumbnails=generate_output(filenames)
 
@@ -142,3 +142,6 @@ else:
     add_text('No results found in any files')
     
 display(final_image)
+
+'''Note: final_image is a global variable which is modified using side-effects by functions. If you want
+to test parts of this code in other cells, re-initialize final_image to whats given in the code

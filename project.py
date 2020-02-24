@@ -88,8 +88,13 @@ def get_faces(pil_img):
     #opencv only takes BGR formatted objects, so using the builtin cv.COLOR_RBG2BGR to convert to BGR then to gray
     img = cv.cvtColor(np.array(pil_img), cv.COLOR_RGB2BGR)
     gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
-    return face_cascade.detectMultiScale(img, 1.3) #1.3 worked out well enough, but has some false positives and false negetives
-
+    var=face_cascade.detectMultiScale(img, 1.3) #1.3 worked out well enough, but has some false positives and false negetives
+    #detectMultiScale return an empty tuple when no images are detected, but a list of lists when they are
+    if len(var)==0:
+        return np.array([]) #return an empty numpy array (not empty list because of the .tolist() method) instead of a tuple 
+    else:
+        return var #return the list of lists
+    
 def draw_faces(pil_img, faces):
     '''Takes in a PIL image to draw rectangles on with the rectangle data given from get_faces() as a 4-list
     Returns modified PIL image. This function is for testing purposes and will not be used in the getting 
@@ -149,7 +154,3 @@ else:
     add_text('No results found in any files')
     
 display(final_image)
-
-'''Note: final_image is a global variable which is modified using side-effects by functions. If you want
-to test parts of this code in other cells, uncomment what is in the next cell and proceed to write test code
-''' 
